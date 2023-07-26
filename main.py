@@ -8,7 +8,7 @@ from disnake.ext import commands
 with open("./config.json", 'r') as file:
     config = json.load(file)
 
-bot = commands.Bot(command_prefix=".")
+bot = commands.Bot(command_prefix=commands.when_mentioned, intents=disnake.Intents.all())
 
 @bot.event
 async def on_ready():
