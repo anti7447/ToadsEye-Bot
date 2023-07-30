@@ -10,8 +10,6 @@ class On_message(commands.Cog):
     async def on_message(self, msg):
         if msg.author.bot is True:
             return
-        
-        print(msg)
 
 
 def setup(bot):
