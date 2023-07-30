@@ -15,7 +15,7 @@ class Mute(Moderation):
         super().__init__(bot)
 
     @commands.slash_command(name="мьют", description="Русское описание")
-    @commands.has_guild_permissions(moderate_members=True)
+    @commands.has_guild_permissions(mute_members=True)
     async def mute(self, inter: ApplicationCommandInteraction,
                    target_member: Member = commands.Param(name="пользователь", description="Кого заквачить?"),
                    duration_mute: int = commands.Param(default=40320, name="время", description="Продолжительность мьюта"),
@@ -34,8 +34,6 @@ class Mute(Moderation):
         seconds = int(time_since.total_seconds())
 
         try:
-
-            duration_time = unit # duration = 1h. [:0] = h
             duration_timer = None # timedelta
 
             if unit == "Секунд":
@@ -68,22 +66,27 @@ class Mute(Moderation):
             )
             await inter.response.send_message(embed=embed)
 
-            
         except disnake.Forbidden:
             embed = Embed(
                 title="Ошибка",
                 color=0xff0000,
-                description="У меня недостаточно прав для выполнения этой команды."
+                description="\"Глаз Жабы\" не может глушить пользователей, которые более высокого статуса, чем он сам"
             )
             await inter.response.send_message(embed=embed, ephemeral=True)
 
-        except commands.MissingPermissions:
-            embed = Embed(
+
+    @mute.error
+    async def mute_error(self, inter: ApplicationCommandInteraction, error):
+        description = "Мы не смогли определить ошибку"
+        if isinstance(error, commands.MissingPermissions):
+            description = "**\"Глаз Жабы\"** не позволяет использовать эту команду посетителям"
+
+        embed = Embed(
                 title="Ошибка",
                 color=0xff0000,
-                description="У вас недостаточно прав для выполнения этой команды."
+                description=description
             )
-            await inter.response.send_message(embed=embed, ephemeral=True)
+        await inter.response.send_message(embed=embed, ephemeral=True)
 
 
 def setup(bot):
